@@ -327,10 +327,6 @@ const loading = ref(false)
 const appConfig = computed((): Config => {
   return <Config> Data().config
 })
-const importCount = computed(() => {
-  const n = importPreview.value.filter(i => !i.exists).length
-  return n > 0 ? ` ${n}` : ''
-})
 
 onBeforeMount(async () => {
   loading.value = true
@@ -441,6 +437,10 @@ const importInterval = ref(1)
 
 interface ImportItem { tag: string; url: string; format: string; exists: boolean }
 const importPreview = ref<ImportItem[]>([])
+const importCount = computed((): string => {
+  const n = importPreview.value.filter((i: ImportItem) => !i.exists).length
+  return n > 0 ? ` ${n}` : ''
+})
 const importSkipped = computed(() => importPreview.value.filter(i => i.exists).length)
 
 function urlToTag(url: string): string {
