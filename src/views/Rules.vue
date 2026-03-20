@@ -86,7 +86,7 @@
         </v-btn>
         <v-btn @click="applyImport" color="primary" variant="flat" :disabled="importPreview.filter(i => !i.exists).length === 0">
           <v-icon icon="mdi-download-multiple" class="mr-1" />
-          Import {{ importPreview.filter(i => !i.exists).length > 0 ? importPreview.filter(i => !i.exists).length : '' }}
+          Import {{ importPreview.filter(i => !i.exists).length > 0 ? String(importPreview.filter(i => !i.exists).length) : '' }}
         </v-btn>
       </v-card-actions>
     </v-card>
