@@ -173,7 +173,7 @@
             <thead><tr><th>#</th><th>Type</th><th>Action</th><th>Outbound</th></tr></thead>
             <tbody>
               <tr v-for="(r, i) in routeImportParsed.rules" :key="i">
-                <td>{{ i + 1 }}</td>
+                <td>{{ (i as number) + 1 }}</td>
                 <td>{{ r.type ?? 'simple' }}</td>
                 <td>{{ r.action }}</td>
                 <td>{{ r.outbound ?? '-' }}</td>
