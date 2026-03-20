@@ -86,7 +86,7 @@
         </v-btn>
         <v-btn @click="applyImport" color="primary" variant="flat" :disabled="importPreview.filter(i => !i.exists).length === 0">
           <v-icon icon="mdi-download-multiple" class="mr-1" />
-          Import {{ importPreview.filter(i => !i.exists).length > 0 ? String(importPreview.filter(i => !i.exists).length) : '' }}
+          Import {{ importPreview.filter(i => !i.exists).length > 0 ? importPreview.filter(i => !i.exists).length : '' }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -321,12 +321,18 @@ import RulesetVue from '@/layouts/modals/Ruleset.vue'
 import { Config } from '@/types/config'
 import { actionKeys, ruleset } from '@/types/rules'
 import { FindDiff } from '@/plugins/utils'
+Import {{ importCount }}
 
 const oldConfig = ref({})
 const loading = ref(false)
 
 const appConfig = computed((): Config => {
   return <Config> Data().config
+})
+
+const importCount = computed(() => {
+  const n = importPreview.value.filter(i => !i.exists).length
+  return n > 0 ? ` ${n}` : ''
 })
 
 onBeforeMount(async () => {
