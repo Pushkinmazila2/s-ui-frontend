@@ -61,16 +61,8 @@
       </v-col>
       <v-col cols="12" sm="6" v-if="rule.domain != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea 
-            :label="$t('rule.domain')" 
-            hide-details 
-            v-model="domain"
-            rows="5" 
-            no-resize 
-            density="compact" 
-            style="font-family: monospace; font-size: 13px;"
-          ></v-textarea>
-          <v-btn icon="mdi-arrow-expand" size="small" variant="text" :title="'Bulk edit'" @click="openBulk('domain')"></v-btn>
+          <v-textarea :label="$t('rule.domain')" hide-details v-model="domain" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
+          <BulkEditDialog v-model="domain" :label="$t('rule.domain')" />
         </div>
       </v-col>
       <!-- domain_suffix -->
