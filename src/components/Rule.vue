@@ -68,55 +68,28 @@
       <!-- domain_suffix -->
       <v-col cols="12" sm="6" v-if="rule.domain_suffix != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea 
-            :label="$t('rule.domainSufix')" 
-            hide-details 
-            v-model="domain_suffix"
-            rows="5" 
-            no-resize 
-            density="compact" 
-            style="font-family: monospace; font-size: 13px;"
-          ></v-textarea>
+          <v-textarea :label="$t('rule.domainSufix')" hide-details v-model="domain_suffix"rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
           <BulkEditDialog v-model="domain_suffix" :label="$t('rule.domainSufix')" />
         </div>
       </v-col>
       <!-- domain_keyword -->
       <v-col cols="12" sm="6" v-if="rule.domain_keyword != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea :label="$t('rule.domainKw')" 
-            hide-details v-model="domain_keyword" 
-            rows="5" 
-            no-resize 
-            density="compact" 
-            style="font-family: monospace; font-size: 13px;"
-          ></v-textarea>
+          <v-textarea :label="$t('rule.domainKw')" hide-details v-model="domain_keyword" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
           <BulkEditDialog v-model="domain_keyword" :label="$t('rule.domainKw')" />
         </div>
       </v-col>
       <!-- domain_regex -->
       <v-col cols="12" sm="6" v-if="rule.domain_regex != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea 
-            :label="$t('rule.domainRgx')" 
-            hide-details v-model="domain_regex" 
-            rows="5" 
-            no-resize 
-            density="compact" 
-            style="font-family: monospace; font-size: 13px;"
-          ></v-textarea>
+          <v-textarea :label="$t('rule.domainRgx')" hide-details v-model="domain_regex" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
           <BulkEditDialog v-model="domain_regex" :label="$t('rule.domainRgx')" />
         </div>
       </v-col>
       <!-- ip_cidr -->
       <v-col cols="12" sm="6" v-if="rule.ip_cidr != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea :label="$t('rule.ip')" 
-            hide-details v-model="ip_cidr" 
-            rows="5" 
-            no-resize 
-            density="compact" 
-            style="font-family: monospace; font-size: 13px;"
-          ></v-textarea>
+          <v-textarea :label="$t('rule.ip')" hide-details v-model="ip_cidr" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
           <BulkEditDialog v-model="ip_cidr" :label="$t('rule.ip')" />
         </div>
       </v-col>
@@ -136,28 +109,14 @@
       <!-- port -->
       <v-col cols="12" sm="6" v-if="rule.port != undefined">
         <div class="d-flex align-start gap-1">
-         <v-textarea 
-           :label="$t('rule.port')" 
-           hide-details v-model="port" 
-           rows="5" 
-           no-resize 
-           density="compact" 
-           style="font-family: monospace; font-size: 13px;"
-          ></v-textarea>
-          <BulkEditDialog v-model="port" :label="$t('rule.port')" />
+         <v-textarea :label="$t('rule.port')" hide-details v-model="port" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
+         <BulkEditDialog v-model="port" :label="$t('rule.port')" />
         </div>
       </v-col>
       <!-- port_range -->
       <v-col cols="12" sm="6" v-if="rule.port_range != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea 
-            :label="$t('rule.portRange')" 
-            hide-details v-model="port_range" 
-            rows="5" 
-            no-resize 
-            density="compact" 
-            style="font-family: monospace; font-size: 13px;"
-          ></v-textarea>
+          <v-textarea :label="$t('rule.portRange')" hide-details v-model="port_range" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
           <BulkEditDialog v-model="port_range" :label="$t('rule.portRange')" />
         </div>
       </v-col>
@@ -174,14 +133,7 @@
       <!-- source_ip_cidr -->
       <v-col cols="12" sm="6" v-if="rule.source_ip_cidr != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea 
-            :label="$t('rule.srcCidr')" 
-            hide-details v-model="source_ip_cidr" 
-            rows="5" 
-            no-resize 
-            density="compact" 
-            style="font-family: monospace; font-size: 13px;"
-          ></v-textarea>
+          <v-textarea :label="$t('rule.srcCidr')" hide-details v-model="source_ip_cidr" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
           <BulkEditDialog v-model="source_ip_cidr" :label="$t('rule.srcCidr')" />
         </div>
       </v-col>
@@ -201,27 +153,14 @@
       <!-- source_port -->
       <v-col cols="12" sm="6" v-if="rule.source_port != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea :label="$t('rule.srcPort')" 
-            hide-details v-model="source_port" 
-            rows="5" 
-            no-resize 
-            density="compact" 
-            style="font-family: monospace; font-size: 13px;"
-          ></v-textarea>
+          <v-textarea :label="$t('rule.srcPort')" hide-details v-model="source_port" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
           <BulkEditDialog v-model="source_port" :label="$t('rule.srcPort')" />
         </div>
       </v-col>
       <!-- source_port_range -->
       <v-col cols="12" sm="6" v-if="rule.source_port_range != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea 
-            :label="$t('rule.srcPortRange')" 
-            hide-details v-model="source_port_range" 
-            rows="5" 
-            no-resize 
-            density="compact" 
-            style="font-family: monospace; font-size: 13px;"
-          ></v-textarea>
+          <v-textarea :label="$t('rule.srcPortRange')" hide-details v-model="source_port_range" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
           <BulkEditDialog v-model="source_port_range" :label="$t('rule.srcPortRange')" />
         </div>
       </v-col>
@@ -249,13 +188,7 @@
       </v-col>
       <v-col cols="12" sm="6" v-if="rule.interface_address != undefined || rule.network_interface_address != undefined || rule.default_interface_address != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea :label="$t('rule.interfaceAddr')" 
-            hide-details v-model="interface_addr"
-            rows="5" 
-            no-resize 
-            density="compact" 
-            style="font-family: monospace; font-size: 13px;"
-          ></v-textarea>
+          <v-textarea :label="$t('rule.interfaceAddr')" hide-details v-model="interface_addr" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
           <BulkEditDialog v-model="interface_addr" :label="$t('rule.interfaceAddr')" />
         </div>
       </v-col>
