@@ -59,16 +59,15 @@
           v-model="domainOption">
         </v-select>
       </v-col>
-      <!-- domain -->
       <v-col cols="12" sm="6" v-if="rule.domain != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea
-            :label="$t('rule.domain')"
-            hide-details
+          <v-textarea 
+            :label="$t('rule.domain')" 
+            hide-details 
             v-model="domain"
-            rows="5"
-            no-resize
-            density="compact"
+            rows="5" 
+            no-resize 
+            density="compact" 
             style="font-family: monospace; font-size: 13px;"
           ></v-textarea>
           <v-btn icon="mdi-arrow-expand" size="small" variant="text" :title="'Bulk edit'" @click="openBulk('domain')"></v-btn>
@@ -77,61 +76,56 @@
       <!-- domain_suffix -->
       <v-col cols="12" sm="6" v-if="rule.domain_suffix != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea
-            :label="$t('rule.domainSufix')"
-            hide-details
+          <v-textarea 
+            :label="$t('rule.domainSufix')" 
+            hide-details 
             v-model="domain_suffix"
-            rows="5"
-            no-resize
-            density="compact"
+            rows="5" 
+            no-resize 
+            density="compact" 
             style="font-family: monospace; font-size: 13px;"
           ></v-textarea>
-          <v-btn icon="mdi-arrow-expand" size="small" variant="text" :title="'Bulk edit'" @click="openBulk('domain_suffix')"></v-btn>
+          <BulkEditDialog v-model="domain_suffix" :label="$t('rule.domainSufix')" />
         </div>
       </v-col>
       <!-- domain_keyword -->
       <v-col cols="12" sm="6" v-if="rule.domain_keyword != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea
-            :label="$t('rule.domainKw')"
-            hide-details
-            v-model="domain_keyword"
-            rows="5"
-            no-resize
-            density="compact"
+          <v-textarea :label="$t('rule.domainKw')" 
+            hide-details v-model="domain_keyword" 
+            rows="5" 
+            no-resize 
+            density="compact" 
             style="font-family: monospace; font-size: 13px;"
           ></v-textarea>
-          <v-btn icon="mdi-arrow-expand" size="small" variant="text" :title="'Bulk edit'" @click="openBulk('domain_keyword')"></v-btn>
+          <BulkEditDialog v-model="domain_keyword" :label="$t('rule.domainKw')" />
         </div>
       </v-col>
       <!-- domain_regex -->
       <v-col cols="12" sm="6" v-if="rule.domain_regex != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea
-            :label="$t('rule.domainRgx')"
-            hide-details
-            v-model="domain_regex"
-            rows="5"
-            no-resize
-            density="compact"
+          <v-textarea 
+            :label="$t('rule.domainRgx')" 
+            hide-details v-model="domain_regex" 
+            rows="5" 
+            no-resize 
+            density="compact" 
             style="font-family: monospace; font-size: 13px;"
           ></v-textarea>
-          <v-btn icon="mdi-arrow-expand" size="small" variant="text" :title="'Bulk edit'" @click="openBulk('domain_regex')"></v-btn>
+          <BulkEditDialog v-model="domain_regex" :label="$t('rule.domainRgx')" />
         </div>
       </v-col>
       <!-- ip_cidr -->
       <v-col cols="12" sm="6" v-if="rule.ip_cidr != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea
-            :label="$t('rule.ip')"
-            hide-details
-            v-model="ip_cidr"
-            rows="5"
-            no-resize
-            density="compact"
+          <v-textarea :label="$t('rule.ip')" 
+            hide-details v-model="ip_cidr" 
+            rows="5" 
+            no-resize 
+            density="compact" 
             style="font-family: monospace; font-size: 13px;"
           ></v-textarea>
-          <v-btn icon="mdi-arrow-expand" size="small" variant="text" :title="'Bulk edit'" @click="openBulk('ip_cidr')"></v-btn>
+          <BulkEditDialog v-model="ip_cidr" :label="$t('rule.ip')" />
         </div>
       </v-col>
       <v-col cols="12" sm="6" v-if="rule.ip_is_private != undefined">
@@ -150,31 +144,29 @@
       <!-- port -->
       <v-col cols="12" sm="6" v-if="rule.port != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea
-            :label="$t('rule.port')"
-            hide-details
-            v-model="port"
-            rows="5"
-            no-resize
-            density="compact"
-            style="font-family: monospace; font-size: 13px;"
+         <v-textarea 
+           :label="$t('rule.port')" 
+           hide-details v-model="port" 
+           rows="5" 
+           no-resize 
+           density="compact" 
+           style="font-family: monospace; font-size: 13px;"
           ></v-textarea>
-          <v-btn icon="mdi-arrow-expand" size="small" variant="text" :title="'Bulk edit'" @click="openBulk('port')"></v-btn>
+          <BulkEditDialog v-model="port" :label="$t('rule.port')" />
         </div>
       </v-col>
       <!-- port_range -->
       <v-col cols="12" sm="6" v-if="rule.port_range != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea
-            :label="$t('rule.portRange')"
-            hide-details
-            v-model="port_range"
-            rows="5"
-            no-resize
-            density="compact"
+          <v-textarea 
+            :label="$t('rule.portRange')" 
+            hide-details v-model="port_range" 
+            rows="5" 
+            no-resize 
+            density="compact" 
             style="font-family: monospace; font-size: 13px;"
           ></v-textarea>
-          <v-btn icon="mdi-arrow-expand" size="small" variant="text" :title="'Bulk edit'" @click="openBulk('port_range')"></v-btn>
+          <BulkEditDialog v-model="port_range" :label="$t('rule.portRange')" />
         </div>
       </v-col>
     </v-row>
@@ -190,16 +182,15 @@
       <!-- source_ip_cidr -->
       <v-col cols="12" sm="6" v-if="rule.source_ip_cidr != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea
-            :label="$t('rule.srcCidr')"
-            hide-details
-            v-model="source_ip_cidr"
-            rows="5"
-            no-resize
-            density="compact"
+          <v-textarea 
+            :label="$t('rule.srcCidr')" 
+            hide-details v-model="source_ip_cidr" 
+            rows="5" 
+            no-resize 
+            density="compact" 
             style="font-family: monospace; font-size: 13px;"
           ></v-textarea>
-          <v-btn icon="mdi-arrow-expand" size="small" variant="text" :title="'Bulk edit'" @click="openBulk('source_ip_cidr')"></v-btn>
+          <BulkEditDialog v-model="source_ip_cidr" :label="$t('rule.srcCidr')" />
         </div>
       </v-col>
       <v-col cols="12" sm="6" v-if="rule.source_ip_is_private != undefined">
@@ -218,31 +209,28 @@
       <!-- source_port -->
       <v-col cols="12" sm="6" v-if="rule.source_port != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea
-            :label="$t('rule.srcPort')"
-            hide-details
-            v-model="source_port"
-            rows="5"
-            no-resize
-            density="compact"
+          <v-textarea :label="$t('rule.srcPort')" 
+            hide-details v-model="source_port" 
+            rows="5" 
+            no-resize 
+            density="compact" 
             style="font-family: monospace; font-size: 13px;"
           ></v-textarea>
-          <v-btn icon="mdi-arrow-expand" size="small" variant="text" :title="'Bulk edit'" @click="openBulk('source_port')"></v-btn>
+          <BulkEditDialog v-model="source_port" :label="$t('rule.srcPort')" />
         </div>
       </v-col>
       <!-- source_port_range -->
       <v-col cols="12" sm="6" v-if="rule.source_port_range != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea
-            :label="$t('rule.srcPortRange')"
-            hide-details
-            v-model="source_port_range"
-            rows="5"
-            no-resize
-            density="compact"
+          <v-textarea 
+            :label="$t('rule.srcPortRange')" 
+            hide-details v-model="source_port_range" 
+            rows="5" 
+            no-resize 
+            density="compact" 
             style="font-family: monospace; font-size: 13px;"
           ></v-textarea>
-          <v-btn icon="mdi-arrow-expand" size="small" variant="text" :title="'Bulk edit'" @click="openBulk('source_port_range')"></v-btn>
+          <BulkEditDialog v-model="source_port_range" :label="$t('rule.srcPortRange')" />
         </div>
       </v-col>
     </v-row>
@@ -269,16 +257,14 @@
       </v-col>
       <v-col cols="12" sm="6" v-if="rule.interface_address != undefined || rule.network_interface_address != undefined || rule.default_interface_address != undefined">
         <div class="d-flex align-start gap-1">
-          <v-textarea
-            :label="$t('rule.interfaceAddr')"
-            hide-details
-            v-model="interface_addr"
-            rows="5"
-            no-resize
-            density="compact"
+          <v-textarea :label="$t('rule.interfaceAddr')" 
+            hide-details v-model="interface_addr"
+            rows="5" 
+            no-resize 
+            density="compact" 
             style="font-family: monospace; font-size: 13px;"
           ></v-textarea>
-          <v-btn icon="mdi-arrow-expand" size="small" variant="text" :title="'Bulk edit'" @click="openBulk('interface_addr')"></v-btn>
+          <BulkEditDialog v-model="interface_addr" :label="$t('rule.interfaceAddr')" />
         </div>
       </v-col>
     </v-row>
@@ -345,48 +331,13 @@
         </v-card>
       </v-menu>
     </v-card-actions>
-
-    <!-- ───────────────── Bulk Edit Dialog ───────────────── -->
-    <v-dialog v-model="bulkDialog" max-width="620" scrollable>
-      <v-card>
-        <v-card-title class="d-flex align-center pa-4">
-          <span>{{ bulkLabel }} — bulk edit</span>
-          <v-spacer />
-          <v-chip size="small" color="primary" variant="tonal" class="mr-2">
-            {{ bulkLineCount }} items
-          </v-chip>
-        </v-card-title>
-        <v-divider />
-        <v-card-text class="pa-4">
-          <p class="text-caption text-medium-emphasis mb-3">
-            One entry per line. Empty lines and duplicates are ignored on apply.
-          </p>
-          <v-textarea
-            v-model="bulkText"
-            :label="bulkLabel"
-            variant="outlined"
-            rows="16"
-            hide-details
-            spellcheck="false"
-            style="font-family: monospace; font-size: 13px;"
-          ></v-textarea>
-        </v-card-text>
-        <v-divider />
-        <v-card-actions class="pa-3">
-          <v-btn @click="bulkDialog = false" variant="text">Cancel</v-btn>
-          <v-spacer />
-          <v-btn @click="bulkClear" color="error" variant="text">Clear all</v-btn>
-          <v-btn @click="bulkApply" color="primary" variant="flat">Apply</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <!-- ──────────────────────────────────────────────────── -->
-
   </v-card>
 </template>
 
 <script lang="ts">
+import BulkEditDialog from '@/components/BulkEditDialog.vue'
 export default {
+  components: { BulkEditDialog },
   props: ['rule', 'clients', 'inTags', 'outTags', 'rsTags', 'deleteable'],
   data() {
     return {
@@ -413,11 +364,6 @@ export default {
         { title: 'RDP', value: 'rdp' },
         { title: 'NTP', value: 'ntp' },
       ],
-      // Bulk edit dialog state
-      bulkDialog: false,
-      bulkField: '' as string,
-      bulkText: '',
-      bulkLabel: '',
     }
   },
   methods: {
@@ -441,37 +387,8 @@ export default {
       this.interfaceKeys.forEach(k => delete this.$props.rule[k])
       this.$props.rule[option] = []
     },
-    // ── Bulk edit helpers ──
-    openBulk(field: string) {
-      this.bulkField = field
-      this.bulkLabel = field
-      // Get current value via the computed getter
-      const val = (this as any)[field]
-      this.bulkText = typeof val === 'string' ? val : ''
-      this.bulkDialog = true
-    },
-    bulkApply() {
-      const lines = this.bulkText
-        .split('\n')
-        .map((l: string) => l.trim())
-        .filter((l: string) => l.length > 0)
-      // Deduplicate
-      const unique = [...new Set(lines)]
-      // Write back via the computed setter — join with \n so computed setter picks it up
-      ;(this as any)[this.bulkField] = unique.join('\n')
-      this.bulkDialog = false
-    },
-    bulkClear() {
-      this.bulkText = ''
-    },
   },
   computed: {
-    bulkLineCount(): number {
-      return this.bulkText
-        .split('\n')
-        .filter((l: string) => l.trim().length > 0)
-        .length
-    },
     optionInbound: {
       get() { return this.$props.rule.inbound != undefined },
       set(v:boolean) { this.$props.rule.inbound = v ? [] : undefined }
