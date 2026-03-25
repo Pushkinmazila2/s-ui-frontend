@@ -331,18 +331,18 @@ console.log('rules in dialog:', props.rules)
 if (rule.inbound?.length) {
   if (!pkt.inbound) {
     matched = false
-    reasons.push($('routeCheck.inbound_missing'))
+    reasons.push($t('routeCheck.inbound_missing'))
   } else if (!rule.inbound.includes(pkt.inbound)) {
     matched = false
-    reasons.push($('routeCheck.inbound_mismatch', {
+    reasons.push($t('routeCheck.inbound_mismatch', {
       value: pkt.inbound,
       list: rule.inbound.join(', ')
     }))
   } else {
-    reasons.push($('routeCheck.inbound_ok'))
+    reasons.push($t('routeCheck.inbound_ok'))
   }
 } else {
-  reasons.push($('routeCheck.inbound_skipped'))
+  reasons.push($t('routeCheck.inbound_skipped'))
 }
 
 // auth_user
