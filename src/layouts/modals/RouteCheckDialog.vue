@@ -331,7 +331,7 @@ console.log('rules in dialog:', props.rules)
 if (rule.inbound?.length) {
   if (!pkt.inbound) {
     matched = false
-    reasons.push(`inbound: packet has no value`)
+    reasons.push(t('routeCheck.inbound_missing'))
   } else if (!rule.inbound.includes(pkt.inbound)) {
     matched = false
     reasons.push(t('routeCheck.inbound_mismatch', {
@@ -340,9 +340,9 @@ if (rule.inbound?.length) {
     }))
   } else {
     reasons.push(t('routeCheck.inbound_ok'))
-  } else {
-  reasons.push(`ruleCheck.inbound_skipped`)
   }
+} else {
+  reasons.push(t('routeCheck.inbound_skipped'))
 }
 
 // auth_user
