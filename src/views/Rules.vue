@@ -282,6 +282,5 @@ function onImportRules(block: any, mode: 'merge' | 'replace', applyFinal: boolea
     }
   }
   if (applyFinal && block.final) route.value.final = block.final
-  routeImportDialog.value = false
 }
 </script>
