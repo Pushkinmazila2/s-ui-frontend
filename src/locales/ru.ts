@@ -503,93 +503,34 @@ export default {
   routeCheck: {
     title: "Проверка правил маршрутизации",
     packetParams: "Параметры пакета",
-  
-    // general
-    start: "Проверка правила",
-    skipped: "Пропущено",
-  
-    // inbound
-    inbound_ok: "Inbound ✓",
-    inbound_missing: "Inbound: нет значения в пакете",
-    inbound_mismatch: 'Inbound "{value}" не в [{list}]',
-    inbound_skipped: "Inbound: пропущено",
-  
-    // auth_user
-    auth_user_ok: "Auth user ✓",
-    auth_user_missing: "Auth user: нет значения",
-    auth_user_mismatch: 'Auth user "{value}" не в [{list}]',
-  
-    // network
-    network_ok: "Network ✓",
-    network_missing: "Network: нет значения",
-    network_mismatch: 'Network "{value}" не в [{list}]',
-  
-    // protocol
-    protocol_ok: "Protocol ✓",
-    protocol_missing: "Protocol: нет значения",
-    protocol_mismatch: 'Protocol "{value}" не в [{list}]',
-  
-    // domain
-    domain: "Домен/Адрес",
-    domain_ok: "Domain ✓",
-    domain_missing: "Domain: нет значения",
-    domain_no_match: "Domain: нет совпадения",
-  
-    // ip
-    ip_cidr_ok: "IP CIDR ✓",
-    ip_cidr_missing: "IP CIDR: нет значения",
-    ip_cidr_mismatch: 'IP "{value}" не входит в [{list}]',
-  
-    source_ip_ok: "Source IP ✓",
-    source_ip_missing: "Source IP: нет значения",
-    source_ip_mismatch: "Source IP: нет совпадения",
-  
-    // ports
-    port_ok: "Port ✓",
-    port_missing: "Port: нет значения",
-    port_mismatch: 'Port {value} не в [{list}]',
-  
-    port_range_ok: "Port range ✓",
-    port_range_missing: "Port range: нет значения",
-    port_range_mismatch: "Port range: нет совпадения",
-  
-    source_port_ok: "Source port ✓",
-    source_port_missing: "Source port: нет значения",
-    source_port_mismatch: "Source port: нет совпадения",
-  
-    source_port_range_ok: "Source port range ✓",
-    source_port_range_missing: "Source port range: нет значения",
-    source_port_range_mismatch: "Source port range: нет совпадения",
-  
-    // rule_set
-    rule_set_ok: "Rule set ✓",
-    rule_set_fail: "Rule set: не совпали [{list}]",
-  
-    // ip_private
-    ip_private_ok: "Private IP ✓",
-    ip_private_mismatch: "Private IP: не совпадает",
-  
-    // logical
-    logical: "Логическое правило ({mode})",
-    
-    destIp: "IP назначения",
-    srcIp: "IP источника",
-    destPort: "Порт назначения",
-    srcPort: "Порт источника",
-    ruleSetHint: "Наборы правил (rule_set)",
-    ruleSetHintSub: "Укажите в какие rule_set входит этот пакет — реальная проверка невозможна без загрузки файлов",
+    domain: "Домен / адрес",
+    destIp: "Целевой IP",
+    srcIp: "Исходный IP",
+    destPort: "Целевой порт",
+    srcPort: "Исходный порт",
+    ruleSetHint: "Выберите Rule Set для проверки",
+    ruleSetHintSub: "Только отмеченные Rule Set будут учитываться в проверке",
     check: "Проверить",
-    reset: "Сбросить",
-    result: "Результат трассировки",
-    matched: "Правило #{index} совпало",
-    noMatch: "Ни одно правило не совпало",
-    noMatchDesc: "Трафик пойдёт через final outbound: {final}",
+    result: "Результаты проверки",
+    matched: "Совпадение найдено (правило №{index})",
+    noMatch: "Совпадение не найдено",
+    noMatchDesc: "Трафик пойдет через конечное правило: {final}",
     status: "Статус",
-    reason: "Причина",
-    status_winner: "✅ Совпало",
-    status_non_terminating: "⚡ Применено",
-    status_no_match: "❌ Не совпало",
-    status_skipped: "⏭ Пропущено",
+    status_winner: "Победитель",
+    status_non_terminating: "Не терминирующее",
+    status_no_match: "Нет совпадений",
+    status_skipped: "Пропущено",
+    inbound_missing: "inbound отсутствует в пакете",
+    inbound_mismatch: 'inbound "{value}" не найдено в [{list}]',
+    inbound_ok: "inbound ✓",
+    inbound_skipped: "inbound пропущен",
+    domain_exact: 'домен точное совпадение: "{value}"',
+    domain_suffix: 'домен suffix совпадение: "{value}"',
+    domain_keyword: 'домен keyword совпадение: "{value}"',
+    domain_regex: 'домен regex совпадение: "{value}"',
+    ip_cidr_ok: "ip_cidr ✓",
+    ip_cidr_mismatch: 'ip_cidr "{value}" не найдено в [{list}]',
+    reset: "Сбросить",
   },
   rulesetAdditions:{
     importTitle: "Импорт наборов правил",
