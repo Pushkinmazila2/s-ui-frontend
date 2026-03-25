@@ -327,180 +327,72 @@ function matchSimpleRule(rule: any): { matched: boolean; reasons: string[] } {
   const reasons: string[] = []
   let matched = true
 
-  reasons.push(`ruleCheck.start`)
-console.log('rules in dialog:', props.rules)
-// inbound
-if (rule.inbound?.length) {
-  if (!pkt.inbound) {
-    matched = false
-    reasons.push(t('routeCheck.inbound_missing'))
-  } else if (!rule.inbound.includes(pkt.inbound)) {
-    matched = false
-    reasons.push(t('routeCheck.inbound_mismatch', {
-      value: pkt.inbound,
-      list: rule.inbound.join(', ')
-    }))
-  } else {
-    reasons.push(t('routeCheck.inbound_ok'))
-  }
-} else {
-  reasons.push(t('routeCheck.inbound_skipped'))
-}
-
-// auth_user
-if (rule.auth_user?.length) {
-  if (!pkt.auth_user) {
-    matched = false
-    reasons.push(`auth_user: packet has no value`)
-  } else if (!rule.auth_user.includes(pkt.auth_user)) {
-    matched = false
-    reasons.push(`auth_user "${pkt.auth_user}" not in [${rule.auth_user.join(', ')}]`)
-  } else {
-    reasons.push(`auth_user ✓`)
-  }
-}
-
-// network
-if (rule.network?.length) {
-  if (!pkt.network) {
-    matched = false
-    reasons.push(`network: packet has no value`)
-  } else if (!rule.network.includes(pkt.network)) {
-    matched = false
-    reasons.push(`network "${pkt.network}" not in [${rule.network.join(', ')}]`)
-  } else {
-    reasons.push(`network ✓`)
-  }
-}
-
-// protocol
-if (rule.protocol?.length) {
-  if (!pkt.protocol) {
-    matched = false
-    reasons.push(`protocol: packet has no value`)
-  } else if (!rule.protocol.includes(pkt.protocol)) {
-    matched = false
-    reasons.push(`protocol "${pkt.protocol}" not in [${rule.protocol.join(', ')}]`)
-  } else {
-    reasons.push(`protocol ✓`)
-  }
-}
-
-// ip_is_private
-if (rule.ip_is_private !== undefined) {
-  if (pkt.ip_is_private !== rule.ip_is_private) {
-    matched = false
-    reasons.push(`ip_is_private: packet=${pkt.ip_is_private}, rule=${rule.ip_is_private}`)
-  } else {
-    reasons.push(`ip_is_private ✓`)
-  }
-}
-
-// domain
-if (rule.domain?.length || rule.domain_suffix?.length || rule.domain_keyword?.length || rule.domain_regex?.length) {
-  if (!pkt.domain) {
-    matched = false
-    reasons.push(`domain: packet has no value`)
-  } else {
-    const { matched: dm, reason } = matchesDomain(pkt.domain, rule)
-    if (!dm) {
+  // inbound — проверяем только если указано
+  if (pkt.inbound && rule.inbound?.length) {
+    if (!rule.inbound.includes(pkt.inbound)) {
       matched = false
-      reasons.push(reason)
+      reasons.push(`inbound "${pkt.inbound}" not in [${rule.inbound.join(', ')}]`)
     } else {
-      reasons.push(reason || 'domain ✓')
+      reasons.push(`inbound ✓`)
     }
   }
-}
 
-// ip_cidr
-if (rule.ip_cidr?.length) {
-  if (!pkt.ip_cidr) {
-    matched = false
-    reasons.push(`ip_cidr: packet has no value`)
-  } else if (!matchesIpCidr(pkt.ip_cidr, rule.ip_cidr)) {
-    matched = false
-    reasons.push(`ip_cidr: "${pkt.ip_cidr}" not in [${rule.ip_cidr.slice(0, 2).join(', ')}...]`)
-  } else {
-    reasons.push(`ip_cidr ✓`)
+  // auth_user
+  if (pkt.auth_user && rule.auth_user?.length) {
+    if (!rule.auth_user.includes(pkt.auth_user)) {
+      matched = false
+      reasons.push(`auth_user "${pkt.auth_user}" not in [${rule.auth_user.join(', ')}]`)
+    } else {
+      reasons.push(`auth_user ✓`)
+    }
   }
-}
 
-// source_ip_cidr
-if (rule.source_ip_cidr?.length) {
-  if (!pkt.source_ip_cidr) {
-    matched = false
-    reasons.push(`source_ip_cidr: packet has no value`)
-  } else if (!matchesIpCidr(pkt.source_ip_cidr, rule.source_ip_cidr)) {
-    matched = false
-    reasons.push(`source_ip_cidr: no match`)
-  } else {
-    reasons.push(`source_ip_cidr ✓`)
+  // network
+  if (pkt.network && rule.network?.length) {
+    if (!rule.network.includes(pkt.network)) {
+      matched = false
+      reasons.push(`network "${pkt.network}" not in [${rule.network.join(', ')}]`)
+    } else {
+      reasons.push(`network ✓`)
+    }
   }
-}
 
-// port
-if (rule.port?.length) {
-  if (pkt.port === null) {
-    matched = false
-    reasons.push(`port: packet has no value`)
-  } else if (!rule.port.includes(pkt.port)) {
-    matched = false
-    reasons.push(`port ${pkt.port} not in [${rule.port.join(', ')}]`)
-  } else {
-    reasons.push(`port ✓`)
+  // protocol
+  if (pkt.protocol && rule.protocol?.length) {
+    if (!rule.protocol.includes(pkt.protocol)) {
+      matched = false
+      reasons.push(`protocol "${pkt.protocol}" not in [${rule.protocol.join(', ')}]`)
+    } else {
+      reasons.push(`protocol ✓`)
+    }
   }
-}
 
-// port_range
-if (rule.port_range?.length) {
-  if (pkt.port === null) {
-    matched = false
-    reasons.push(`port_range: packet has no value`)
-  } else if (!matchesPortRange(pkt.port, rule.port_range)) {
-    matched = false
-    reasons.push(`port_range: no match`)
-  } else {
-    reasons.push(`port_range ✓`)
+  // domain / domain_suffix / domain_keyword / domain_regex
+  if (pkt.domain) {
+    const { matched: dm, reason } = matchesDomain(pkt.domain, rule)
+    if (!dm) { matched = false; reasons.push(reason) }
+    else reasons.push(reason || 'domain ✓')
   }
-}
 
-// source_port
-if (rule.source_port?.length) {
-  if (pkt.source_port === null) {
-    matched = false
-    reasons.push(`source_port: packet has no value`)
-  } else if (!rule.source_port.includes(pkt.source_port)) {
-    matched = false
-    reasons.push(`source_port ${pkt.source_port} not in [${rule.source_port.join(', ')}]`)
-  } else {
-    reasons.push(`source_port ✓`)
+  // ip_cidr
+  if (pkt.ip_cidr) {
+    if (!matchesIpCidr(pkt.ip_cidr, rule.ip_cidr)) {
+      matched = false
+      reasons.push(`ip_cidr "${pkt.ip_cidr}" not in [${rule.ip_cidr?.join(', ')}]`)
+    } else reasons.push(`ip_cidr ✓`)
   }
-}
 
-// source_port_range
-if (rule.source_port_range?.length) {
-  if (pkt.source_port === null) {
-    matched = false
-    reasons.push(`source_port_range: packet has no value`)
-  } else if (!matchesPortRange(pkt.source_port, rule.source_port_range)) {
-    matched = false
-    reasons.push(`source_port_range: no match`)
-  } else {
-    reasons.push(`source_port_range ✓`)
+  // rule_set
+  if (rule.rule_set?.length) {
+    const allMatch = rule.rule_set.every((tag: string) => !!ruleSetMatches[tag])
+    if (!allMatch) {
+      const missing = rule.rule_set.filter((tag: string) => !ruleSetMatches[tag])
+      matched = false
+      reasons.push(`rule_set: [${missing.join(', ')}] marked as not matching`)
+    } else {
+      reasons.push(`rule_set: [${rule.rule_set.join(', ')}] ✓`)
+    }
   }
-}
-
-// rule_set
-if (rule.rule_set?.length) {
-  const missing = rule.rule_set.filter((tag: string) => ruleSetMatches[tag] !== true)
-
-  if (missing.length) {
-    matched = false
-    reasons.push(`rule_set: not matched [${missing.join(', ')}]`)
-  } else {
-    reasons.push(`rule_set ✓`)
-  }
-}
 
   return { matched, reasons }
 }
