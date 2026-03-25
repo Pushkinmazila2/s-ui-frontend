@@ -31,24 +31,6 @@
             ></v-select>
           </v-col>
           <v-col cols="12" sm="6" md="4">
-            <v-select
-              v-model="pkt.network"
-              :items="['tcp', 'udp', 'icmp']"
-              :label="$t('network')"
-              hide-details density="compact" clearable
-              @click:clear="pkt.network = ''"
-            ></v-select>
-          </v-col>
-          <v-col cols="12" sm="6" md="4">
-            <v-select
-              v-model="pkt.protocol"
-              :items="protocols"
-              :label="$t('protocol')"
-              hide-details density="compact" clearable
-              @click:clear="pkt.protocol = ''"
-            ></v-select>
-          </v-col>
-          <v-col cols="12" sm="6" md="4">
             <v-text-field
               v-model="pkt.domain"
               :label="$t('routeCheck.domain')"
@@ -65,38 +47,6 @@
               placeholder="1.2.3.4"
               spellcheck="false"
             ></v-text-field>
-          </v-col>
-          <v-col cols="12" sm="6" md="4">
-            <v-text-field
-              v-model="pkt.source_ip_cidr"
-              :label="$t('routeCheck.srcIp')"
-              hide-details density="compact"
-              placeholder="192.168.1.1"
-              spellcheck="false"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12" sm="6" md="2">
-            <v-text-field
-              v-model.number="pkt.port"
-              :label="$t('routeCheck.destPort')"
-              hide-details density="compact"
-              type="number" min="1" max="65535"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12" sm="6" md="2">
-            <v-text-field
-              v-model.number="pkt.source_port"
-              :label="$t('routeCheck.srcPort')"
-              hide-details density="compact"
-              type="number" min="1" max="65535"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12" sm="6" md="4">
-            <v-checkbox
-              v-model="pkt.ip_is_private"
-              :label="$t('rule.privateIp')"
-              hide-details density="compact"
-            ></v-checkbox>
           </v-col>
         </v-row>
 
@@ -189,13 +139,15 @@
 </template>
 
 <script lang="ts" setup>
+import { ref, reactive, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+
 const { t } = useI18n()
-import { ref, computed, reactive } from 'vue'
 
 // ── Props ──────────────────────────────────────────────────
 const props = defineProps<{
   rules: any[]
+  rulesets?: any[]
   finalOutbound: string
   inboundTags: string[]
   clients: string[]
@@ -203,40 +155,14 @@ const props = defineProps<{
 
 // ── State ──────────────────────────────────────────────────
 const dialog = ref(false)
-
-const protocols = ['http', 'tls', 'quic', 'stun', 'dns', 'bittorrent', 'dtls', 'ssh', 'rdp', 'ntp']
-
-const NON_TERMINATING = ['sniff', 'hijack-dns', 'resolve']
-
-interface Packet {
-  inbound: string
-  auth_user: string
-  network: string
-  protocol: string
-  domain: string
-  ip_cidr: string
-  source_ip_cidr: string
-  port: number | null
-  source_port: number | null
-  ip_is_private: boolean
-}
-
-const defaultPkt = (): Packet => ({
-  inbound: '', auth_user: '', network: '', protocol: '',
-  domain: '', ip_cidr: '', source_ip_cidr: '',
-  port: null, source_port: null, ip_is_private: false,
-})
-
-const pkt = reactive<Packet>(defaultPkt())
-
-// rule_set checkboxes
+const pkt = reactive({ inbound: '', auth_user: '', domain: '', ip_cidr: '' })
 const ruleSetMatches = reactive<Record<string, boolean>>({})
+const results = ref<any[]>([])
 
-// All rule_set tags referenced in rules (recursive)
 const referencedRuleSets = computed((): string[] => {
   const tags = new Set<string>()
-  const collect = (ruleList: any[]) => {
-    for (const r of ruleList) {
+  const collect = (rules: any[]) => {
+    for (const r of rules) {
       if (r.rule_set) r.rule_set.forEach((t: string) => tags.add(t))
       if (r.rules) collect(r.rules)
     }
@@ -245,136 +171,84 @@ const referencedRuleSets = computed((): string[] => {
   return [...tags]
 })
 
-// ── Result types ───────────────────────────────────────────
-type Status = 'winner' | 'non_terminating' | 'no_match' | 'skipped'
-
-interface RuleResult {
-  index: number
-  ruleType: string
-  action: string
-  outbound: string
-  status: Status
-  reason: string
-}
-
-const results = ref<RuleResult[]>([])
 const winner = computed(() => results.value.find(r => r.status === 'winner') ?? null)
+const NON_TERMINATING = ['sniff', 'hijack-dns', 'resolve']
+const remoteCache = reactive<Record<string, { domains: string[]; cidrs: string[] }>>({})
 
-// ── Matching engine ────────────────────────────────────────
+// ── Helpers ────────────────────────────────────────────────
+function reset() {
+  pkt.inbound = ''
+  pkt.auth_user = ''
+  pkt.domain = ''
+  pkt.ip_cidr = ''
+  results.value = []
+  Object.keys(ruleSetMatches).forEach(k => delete ruleSetMatches[k])
+}
 
-function matchesDomain(domain: string, rule: any): { matched: boolean; reason: string } {
+function rowStyle(r: any) {
+  if (r.status === 'winner') return 'background: rgba(var(--v-theme-success), 0.06);'
+  if (r.status === 'skipped') return 'opacity: 0.4;'
+  return ''
+}
+
+function statusColor(status: string) {
+  return { winner: 'success', non_terminating: 'info', no_match: 'error', skipped: 'default' }[status]
+}
+
+// ── Remote rule_set loader ──
+async function loadRemoteRuleSet(tag: string, url: string) {
+  if (remoteCache[tag]) return remoteCache[tag]
+  try {
+    const res = await fetch(url)
+    const text = await res.text()
+    const lines = text.split(/\r?\n/).filter(Boolean)
+    const domains: string[] = []
+    const cidrs: string[] = []
+    for (const l of lines) {
+      if (l.match(/^\d/)) cidrs.push(l)
+      else domains.push(l)
+    }
+    remoteCache[tag] = { domains, cidrs }
+    return remoteCache[tag]
+  } catch (e) {
+    console.error(`Failed to load rule_set ${tag}`, e)
+    return { domains: [], cidrs: [] }
+  }
+}
+
+// ── Domain matcher ──
+function matchesDomain(domain: string, rule: any) {
   if (!domain) return { matched: false, reason: 'no domain in packet' }
-
-  // exact
-  if (rule.domain?.length) {
-    const hit = rule.domain.find((d: string) => d.toLowerCase() === domain.toLowerCase())
-    if (hit) return { matched: true, reason: `domain exact: "${hit}"` }
-    if (!rule.domain_suffix && !rule.domain_keyword && !rule.domain_regex)
-      return { matched: false, reason: `domain: no exact match in [${rule.domain.slice(0, 3).join(', ')}...]` }
-  }
-  // suffix
-  if (rule.domain_suffix?.length) {
-    const d = domain.toLowerCase()
-    const hit = rule.domain_suffix.find((s: string) => {
-      const suffix = s.toLowerCase().replace(/^\*\./, '')
-      return d === suffix || d.endsWith('.' + suffix)
-    })
-    if (hit) return { matched: true, reason: `domain_suffix: "${hit}"` }
-    return { matched: false, reason: `domain_suffix: "${domain}" doesn't match [${rule.domain_suffix.slice(0, 2).join(', ')}...]` }
-  }
-  // keyword
-  if (rule.domain_keyword?.length) {
-    const hit = rule.domain_keyword.find((k: string) => domain.toLowerCase().includes(k.toLowerCase()))
-    if (hit) return { matched: true, reason: `domain_keyword: "${hit}"` }
-    return { matched: false, reason: `domain_keyword: no match` }
-  }
-  // regex
-  if (rule.domain_regex?.length) {
-    const hit = rule.domain_regex.find((r: string) => { try { return new RegExp(r).test(domain) } catch { return false } })
-    if (hit) return { matched: true, reason: `domain_regex: "${hit}"` }
-    return { matched: false, reason: `domain_regex: no match` }
-  }
-  return { matched: true, reason: '' }
+  if (rule.domain?.includes(domain)) return { matched: true, reason: `domain: exact "${domain}"` }
+  return { matched: false, reason: `domain: "${domain}" not matched` }
 }
 
-function matchesIpCidr(ip: string, cidrs: string[]): boolean {
+// ── IP matcher ──
+function matchesIpCidr(ip: string, cidrs?: string[]) {
   if (!cidrs?.length) return true
-  if (!ip) return false
-
-  return cidrs.some(cidr => {
-    if (!cidr.includes('/')) return cidr === ip
-
-    const [base, mask] = cidr.split('/')
-    const octets = Math.floor(Number(mask) / 8)
-
-    return ip.split('.').slice(0, octets).join('.') ===
-           base.split('.').slice(0, octets).join('.')
-  })
+  return cidrs.includes(ip)
 }
 
-function matchesPortRange(port: number | null, ranges: string[]): boolean {
-  if (!ranges?.length) return true
-  if (port === null) return false
-
-  return ranges.some(r => {
-    const [a, b] = r.split(':').map(Number)
-    return b ? port >= a && port <= b : port === a
-  })
-}
-
-// Match a simple rule object against packet — returns { matched, reasons[] }
-function matchSimpleRule(rule: any): { matched: boolean; reasons: string[] } {
+// ── Match a single rule ──
+async function matchRule(rule: any) {
   const reasons: string[] = []
+
+  const empty = !rule.domain?.length && !rule.ip_cidr?.length && !rule.rule_set?.length
+  if (empty) {
+    reasons.push('empty rule — auto matched')
+    return { matched: true, reasons }
+  }
+
   let matched = true
 
-  // inbound — проверяем только если указано
-  if (pkt.inbound && rule.inbound?.length) {
-    if (!rule.inbound.includes(pkt.inbound)) {
-      matched = false
-      reasons.push(`inbound "${pkt.inbound}" not in [${rule.inbound.join(', ')}]`)
-    } else {
-      reasons.push(`inbound ✓`)
-    }
-  }
-
-  // auth_user
-  if (pkt.auth_user && rule.auth_user?.length) {
-    if (!rule.auth_user.includes(pkt.auth_user)) {
-      matched = false
-      reasons.push(`auth_user "${pkt.auth_user}" not in [${rule.auth_user.join(', ')}]`)
-    } else {
-      reasons.push(`auth_user ✓`)
-    }
-  }
-
-  // network
-  if (pkt.network && rule.network?.length) {
-    if (!rule.network.includes(pkt.network)) {
-      matched = false
-      reasons.push(`network "${pkt.network}" not in [${rule.network.join(', ')}]`)
-    } else {
-      reasons.push(`network ✓`)
-    }
-  }
-
-  // protocol
-  if (pkt.protocol && rule.protocol?.length) {
-    if (!rule.protocol.includes(pkt.protocol)) {
-      matched = false
-      reasons.push(`protocol "${pkt.protocol}" not in [${rule.protocol.join(', ')}]`)
-    } else {
-      reasons.push(`protocol ✓`)
-    }
-  }
-
-  // domain / domain_suffix / domain_keyword / domain_regex
+  // Domain
   if (pkt.domain) {
     const { matched: dm, reason } = matchesDomain(pkt.domain, rule)
     if (!dm) { matched = false; reasons.push(reason) }
-    else reasons.push(reason || 'domain ✓')
+    else reasons.push(reason)
   }
 
-  // ip_cidr
+  // IP
   if (pkt.ip_cidr) {
     if (!matchesIpCidr(pkt.ip_cidr, rule.ip_cidr)) {
       matched = false
@@ -384,46 +258,25 @@ function matchSimpleRule(rule: any): { matched: boolean; reasons: string[] } {
 
   // rule_set
   if (rule.rule_set?.length) {
-    const allMatch = rule.rule_set.every((tag: string) => !!ruleSetMatches[tag])
-    if (!allMatch) {
-      const missing = rule.rule_set.filter((tag: string) => !ruleSetMatches[tag])
-      matched = false
-      reasons.push(`rule_set: [${missing.join(', ')}] marked as not matching`)
-    } else {
-      reasons.push(`rule_set: [${rule.rule_set.join(', ')}] ✓`)
+    for (const tag of rule.rule_set) {
+      let rs: any = ruleSetMatches[tag] ? { domains: [], cidrs: [] } : null
+      const remote = props.rulesets?.find(r => r.tag === tag && r.type === 'remote')
+      if (remote) rs = await loadRemoteRuleSet(tag, remote.url)
+      if (rs) {
+        let rsMatched = false
+        if (pkt.domain && rs.domains.includes(pkt.domain)) rsMatched = true
+        if (pkt.ip_cidr && rs.cidrs.includes(pkt.ip_cidr)) rsMatched = true
+        if (!rsMatched) { matched = false; reasons.push(`rule_set: ${tag} no match`) }
+        else reasons.push(`rule_set: ${tag} ✓`)
+      }
     }
   }
 
   return { matched, reasons }
 }
 
-// Match logical rule (recursive)
-function matchLogicalRule(rule: any): { matched: boolean; reasons: string[] } {
-  const subRules: any[] = rule.rules ?? []
-  const mode: string = rule.mode ?? 'and'
-  const subResults = subRules.map(r => matchSimpleRule(r))
-
-  let matched: boolean
-  if (mode === 'or') {
-    matched = subResults.some(r => r.matched)
-  } else {
-    matched = subResults.every(r => r.matched)
-  }
-
-  const reasons = [`logical (${mode}): ` + subResults.map((r, i) => `rule${i + 1}=${r.matched ? '✓' : '✗'}`).join(', ')]
-  return { matched, reasons }
-}
-
-function matchRule(rule: any): { matched: boolean; reasons: string[] } {
-  if (rule.type === 'logical') {
-    return matchLogicalRule(rule)
-  }
-  return matchSimpleRule(rule)
-}
-
-// ── Run ────────────────────────────────────────────────────
-
-function runCheck() {
+// ── Run check ──
+async function runCheck() {
   results.value = []
   let terminated = false
 
@@ -434,65 +287,24 @@ function runCheck() {
     const ruleType = rule.type === 'logical' ? `logical (${rule.mode ?? 'and'})` : 'simple'
 
     if (terminated) {
-      results.value.push({
-        index: i, ruleType, action, outbound,
-        status: 'skipped',
-        reason: 'earlier rule already matched',
-      })
+      results.value.push({ index: i, ruleType, action, outbound, status: 'skipped', reason: 'earlier rule matched' })
       continue
     }
 
-    const { matched, reasons } = matchRule(rule)
-    let effectiveMatch = rule.invert ? !matched : matched
+    const { matched, reasons } = await matchRule(rule)
+    const effectiveMatch = rule.invert ? !matched : matched
 
     if (effectiveMatch) {
-      if (NON_TERMINATING.includes(action)) {
-        results.value.push({
-          index: i, ruleType, action, outbound,
-          status: 'non_terminating',
-          reason: reasons.join('; ') + (rule.invert ? ' [inverted]' : ''),
-        })
-        // continue — don't terminate
-      } else {
-        results.value.push({
-          index: i, ruleType, action, outbound,
-          status: 'winner',
-          reason: reasons.join('; ') + (rule.invert ? ' [inverted]' : ''),
-        })
-        terminated = true
-      }
+      const status = NON_TERMINATING.includes(action) ? 'non_terminating' : 'winner'
+      results.value.push({ index: i, ruleType, action, outbound, status, reason: reasons.join('; ') })
+      if (status === 'winner') terminated = true
     } else {
-      results.value.push({
-        index: i, ruleType, action, outbound,
-        status: 'no_match',
-        reason: reasons.join('; ') + (rule.invert ? ' [inverted]' : ''),
-      })
+      results.value.push({ index: i, ruleType, action, outbound, status: 'no_match', reason: reasons.join('; ') })
     }
   }
 }
 
-// ── Helpers ────────────────────────────────────────────────
-
-function statusColor(status: Status): string {
-  return { winner: 'success', non_terminating: 'info', no_match: 'error', skipped: 'default' }[status]
-}
-
-function rowStyle(r: RuleResult): string {
-  if (r.status === 'winner') return 'background: rgba(var(--v-theme-success), 0.06);'
-  if (r.status === 'skipped') return 'opacity: 0.4;'
-  return ''
-}
-
-function reset() {
-  Object.assign(pkt, defaultPkt())
-  results.value = []
-  Object.keys(ruleSetMatches).forEach(k => delete ruleSetMatches[k])
-}
-
-function open() {
-  reset()
-  dialog.value = true
-}
-
+// ── Expose ──
+function open() { reset(); dialog.value = true }
 defineExpose({ open })
 </script>
