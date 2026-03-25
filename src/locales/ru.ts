@@ -500,10 +500,77 @@ export default {
     bulkItems: "записей",
     bulkClear: "Очистить всё",
   },
-  routeCheck: {
-    title: "Проверка правил",
+  routeCheckLocale: {
+    title: "Проверка правил маршрутизации",
     packetParams: "Параметры пакета",
-    domain: "Домен назначения",
+  
+    // general
+    start: "Проверка правила",
+    skipped: "Пропущено",
+  
+    // inbound
+    inbound_ok: "Inbound ✓",
+    inbound_missing: "Inbound: нет значения в пакете",
+    inbound_mismatch: 'Inbound "{value}" не в [{list}]',
+    inbound_skipped: "Inbound: пропущено",
+  
+    // auth_user
+    auth_user_ok: "Auth user ✓",
+    auth_user_missing: "Auth user: нет значения",
+    auth_user_mismatch: 'Auth user "{value}" не в [{list}]',
+  
+    // network
+    network_ok: "Network ✓",
+    network_missing: "Network: нет значения",
+    network_mismatch: 'Network "{value}" не в [{list}]',
+  
+    // protocol
+    protocol_ok: "Protocol ✓",
+    protocol_missing: "Protocol: нет значения",
+    protocol_mismatch: 'Protocol "{value}" не в [{list}]',
+  
+    // domain
+    domain_ok: "Domain ✓",
+    domain_missing: "Domain: нет значения",
+    domain_no_match: "Domain: нет совпадения",
+  
+    // ip
+    ip_cidr_ok: "IP CIDR ✓",
+    ip_cidr_missing: "IP CIDR: нет значения",
+    ip_cidr_mismatch: 'IP "{value}" не входит в [{list}]',
+  
+    source_ip_ok: "Source IP ✓",
+    source_ip_missing: "Source IP: нет значения",
+    source_ip_mismatch: "Source IP: нет совпадения",
+  
+    // ports
+    port_ok: "Port ✓",
+    port_missing: "Port: нет значения",
+    port_mismatch: 'Port {value} не в [{list}]',
+  
+    port_range_ok: "Port range ✓",
+    port_range_missing: "Port range: нет значения",
+    port_range_mismatch: "Port range: нет совпадения",
+  
+    source_port_ok: "Source port ✓",
+    source_port_missing: "Source port: нет значения",
+    source_port_mismatch: "Source port: нет совпадения",
+  
+    source_port_range_ok: "Source port range ✓",
+    source_port_range_missing: "Source port range: нет значения",
+    source_port_range_mismatch: "Source port range: нет совпадения",
+  
+    // rule_set
+    rule_set_ok: "Rule set ✓",
+    rule_set_fail: "Rule set: не совпали [{list}]",
+  
+    // ip_private
+    ip_private_ok: "Private IP ✓",
+    ip_private_mismatch: "Private IP: не совпадает",
+  
+    // logical
+    logical: "Логическое правило ({mode})",
+    
     destIp: "IP назначения",
     srcIp: "IP источника",
     destPort: "Порт назначения",
