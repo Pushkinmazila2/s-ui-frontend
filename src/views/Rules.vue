@@ -35,8 +35,15 @@
     :existingRulesetTags="rulesetTags"
     @save="onImportRules"
   />
-  <!-- ──────────────────────────────────────────── -->
-
+  <!-- ───────────── Roule check Dialog ───────────── -->
+  <RouteCheckDialog
+    ref="routeCheckRef"
+    :rules="rules"
+    :finalOutbound="route.final ?? ''"
+    :inboundTags="inboundTags"
+    :clients="clients"
+   />
+   <!-- ──────────────────────────────────────────── -->
   <v-row>
     <v-col cols="12" justify="center" align="center">
       <v-btn color="primary" @click="showRuleModal(-1)" style="margin: 0 5px;">{{ $t('rule.add') }}</v-btn>
@@ -46,6 +53,9 @@
       </v-btn>
       <v-btn color="secondary" @click="importRulesRef?.open()" style="margin: 0 5px;">
         <v-icon icon="mdi-routes" class="mr-1" />{{ $t('ruleset.importRulesTitle') }}
+      </v-btn>
+      <v-btn color="info" @click="routeCheckRef?.open()" style="margin: 0 5px;">
+        <v-icon icon="mdi-magnify-expand" class="mr-1" />{{ $t('routeCheck.title') }}
       </v-btn>
       <v-btn variant="outlined" color="warning" @click="saveConfig" :loading="loading" :disabled="stateChange">
         {{ $t('actions.save') }}
@@ -152,6 +162,7 @@ import RuleVue from '@/layouts/modals/Rule.vue'
 import RulesetVue from '@/layouts/modals/Ruleset.vue'
 import BulkImportRulesetsDialog from '@/layouts/modals/BulkImportRulesetsDialog.vue'
 import ImportRulesDialog from '@/layouts/modals/ImportRulesDialog.vue'
+import RouteCheckDialog from '@/layouts/modals/RouteCheckDialog.vue'
 import { Config } from '@/types/config'
 import { actionKeys, ruleset } from '@/types/rules'
 import { FindDiff } from '@/plugins/utils'
@@ -160,6 +171,7 @@ const oldConfig = ref({})
 const loading = ref(false)
 const bulkImportRulesetsRef = ref<InstanceType<typeof BulkImportRulesetsDialog> | null>(null)
 const importRulesRef = ref<InstanceType<typeof ImportRulesDialog> | null>(null)
+const routeCheckRef = ref<InstanceType<typeof RouteCheckDialog> | null>(null)
 const appConfig = computed((): Config => {
   return <Config> Data().config
 })
