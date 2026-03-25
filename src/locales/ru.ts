@@ -538,7 +538,7 @@ export default {
     importFinalOutbound: "Outbound по умолчанию (final)",
     importApplyFinal: "Применить как outbound по умолчанию",
     importFetch: "Загрузить",
-}
+  },
   dns: {
     add: "Добавить DNS сервер",
     title: "DNS серверы",
