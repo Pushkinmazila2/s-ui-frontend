@@ -500,7 +500,7 @@ export default {
     bulkItems: "записей",
     bulkClear: "Очистить всё",
   },
-  routeCheckLocale: {
+  routeCheck: {
     title: "Проверка правил маршрутизации",
     packetParams: "Параметры пакета",
   
