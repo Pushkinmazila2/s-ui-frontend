@@ -189,6 +189,8 @@
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 import { ref, computed, reactive } from 'vue'
 
 // ── Props ──────────────────────────────────────────────────
