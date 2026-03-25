@@ -673,3 +673,26 @@ export const actionsAdditions = {
   apply: "Применить",
 }
 
+export const routeCheckLocale = {
+  title: "Проверка правил маршрутизации",
+  packetParams: "Параметры пакета",
+  domain: "Домен назначения",
+  destIp: "IP назначения",
+  srcIp: "IP источника",
+  destPort: "Порт назначения",
+  srcPort: "Порт источника",
+  ruleSetHint: "Наборы правил (rule_set)",
+  ruleSetHintSub: "Укажите в какие rule_set входит этот пакет — реальная проверка невозможна без загрузки файлов",
+  check: "Проверить",
+  reset: "Сбросить",
+  result: "Результат трассировки",
+  matched: "Правило #{index} совпало",
+  noMatch: "Ни одно правило не совпало",
+  noMatchDesc: "Трафик пойдёт через final outbound: {final}",
+  status: "Статус",
+  reason: "Причина",
+  status_winner: "✅ Совпало",
+  status_non_terminating: "⚡ Применено",
+  status_no_match: "❌ Не совпало",
+  status_skipped: "⏭ Пропущено",
+}
