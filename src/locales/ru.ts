@@ -530,6 +530,7 @@ export default {
     protocol_mismatch: 'Protocol "{value}" не в [{list}]',
   
     // domain
+    domain: "Домен/Адрес",
     domain_ok: "Domain ✓",
     domain_missing: "Domain: нет значения",
     domain_no_match: "Domain: нет совпадения",
