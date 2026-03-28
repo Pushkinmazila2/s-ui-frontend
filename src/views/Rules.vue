@@ -20,43 +20,48 @@
     @close="closeRulesetModal"
     @save="saveRulesetModal"
   />
-  <!-- ───────────── Bulk Import Rulesets Dialog ───────────── -->
-  <BulkImportRulesetsDialog
-    ref="bulkImportRulesetsRef"
-    :outboundTags="outboundTags"
-    :rulesetTags="rulesetTags"
-    @save="onBulkImportRulesets"
-  />
-  <!-- ───────────── Import Route Dialog ───────────── -->
-  <ImportRulesDialog
-    ref="importRulesRef"
+  <RuleImport
+    v-model="importRulesModal.visible"
+    :visible="importRulesModal.visible"
     :existingRulesCount="rules.length"
     :existingRulesetsCount="rulesets.length"
     :existingRulesetTags="rulesetTags"
-    @save="onImportRules"
+    @save="saveImportRule"
+    @close="closeImportRule"
   />
-  <!-- ───────────── Roule check Dialog ───────────── -->
-  <RouteCheckDialog
-    ref="routeCheckRef"
-    :rules="rules"
-    :finalOutbound="route.final ?? ''"
-    :inboundTags="inboundTags"
-    :clients="clients"
-   />
-   <!-- ──────────────────────────────────────────── -->
+  <RulesetImport
+    v-model="importRulesetsModal.visible"
+    :visible="importRulesetsModal.visible"
+    :outTags="outboundTags"
+    :rsTags="rulesetTags"
+    @save="saveImportRulesets"
+    @close="closeImportRulesets"
+  />
   <v-row>
     <v-col cols="12" justify="center" align="center">
       <v-btn color="primary" @click="showRuleModal(-1)" style="margin: 0 5px;">{{ $t('rule.add') }}</v-btn>
       <v-btn color="primary" @click="showRulesetModal(-1)" style="margin: 0 5px;">{{ $t('ruleset.add') }}</v-btn>
-      <v-btn color="secondary" @click="bulkImportRulesetsRef?.open()" style="margin: 0 5px;">
-        <v-icon icon="mdi-download-multiple" class="mr-1" />{{ $t('ruleset.importTitle') }}
-      </v-btn>
-      <v-btn color="secondary" @click="importRulesRef?.open()" style="margin: 0 5px;">
-        <v-icon icon="mdi-routes" class="mr-1" />{{ $t('ruleset.importRulesTitle') }}
-      </v-btn>
-      <v-btn color="info" @click="routeCheckRef?.open()" style="margin: 0 5px;">
-        <v-icon icon="mdi-magnify-expand" class="mr-1" />{{ $t('routeCheck.title') }}
-      </v-btn>
+      <v-menu v-model="actionMenu" :close-on-content-click="false" location="bottom center">
+        <template v-slot:activator="{ props }">
+          <v-btn v-bind="props" hide-details variant="text" icon>
+            <v-icon icon="mdi-tools" color="primary" />
+          </v-btn>
+        </template>
+        <v-list density="compact" nav>
+          <v-list-item link @click="showImportRule">
+            <template v-slot:prepend>
+              <v-icon icon="mdi-routes"></v-icon>
+            </template>
+            <v-list-item-title v-text="$t('rule.import.rulesTitle')"></v-list-item-title>
+          </v-list-item>
+          <v-list-item link @click="showImportRulesets">
+            <template v-slot:prepend>
+              <v-icon icon="mdi-download-multiple"></v-icon>
+            </template>
+            <v-list-item-title v-text="$t('rule.import.title')"></v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
       <v-btn variant="outlined" color="warning" @click="saveConfig" :loading="loading" :disabled="stateChange">
         {{ $t('actions.save') }}
       </v-btn>
@@ -92,6 +97,7 @@
         </v-card-subtitle>
         <v-card-text>
           <v-row><v-col>{{ $t('ruleset.format') }}</v-col><v-col>{{ item.format }}</v-col></v-row>
+          <v-row><v-col>{{ $t('objects.outbound') }}</v-col><v-col>{{ item.download_detour ?? '-' }}</v-col></v-row>
           <v-row><v-col>{{ $t('actions.update') }}</v-col><v-col>{{ item.update_interval ?? '-' }}</v-col></v-row>
         </v-card-text>
         <v-divider></v-divider>
@@ -160,18 +166,15 @@ import Data from '@/store/modules/data'
 import { computed, ref, onBeforeMount } from 'vue'
 import RuleVue from '@/layouts/modals/Rule.vue'
 import RulesetVue from '@/layouts/modals/Ruleset.vue'
-import BulkImportRulesetsDialog from '@/layouts/modals/BulkImportRulesetsDialog.vue'
-import ImportRulesDialog from '@/layouts/modals/ImportRulesDialog.vue'
-import RouteCheckDialog from '@/layouts/modals/RouteCheckDialog.vue'
+import RulesetImport from '@/layouts/modals/RulesetImport.vue'
+import RuleImport from '@/layouts/modals/RuleImport.vue'
 import { Config } from '@/types/config'
 import { actionKeys, ruleset } from '@/types/rules'
 import { FindDiff } from '@/plugins/utils'
 
 const oldConfig = ref({})
 const loading = ref(false)
-const bulkImportRulesetsRef = ref<InstanceType<typeof BulkImportRulesetsDialog> | null>(null)
-const importRulesRef = ref<InstanceType<typeof ImportRulesDialog> | null>(null)
-const routeCheckRef = ref<InstanceType<typeof RouteCheckDialog> | null>(null)
+const actionMenu = ref(false)
 const appConfig = computed((): Config => {
   return <Config> Data().config
 })
@@ -272,15 +275,17 @@ const onDrop = (index: any) => {
   }
 }
 
-// ─────────────────────────────────────────────
-// Bulk Import Rulesets
-// ─────────────────────────────────────────────
+const importRulesModal = ref({ visible: false })
 
-function onBulkImportRulesets(items: any[]) {
-  rulesets.value.push(...items)
+function showImportRule() {
+  importRulesModal.value.visible = true
 }
 
-function onImportRules(block: any, mode: 'merge' | 'replace', applyFinal: boolean) {
+function closeImportRule() {
+  importRulesModal.value.visible = false
+}
+
+function saveImportRule(block: any, mode: 'merge' | 'replace', applyFinal: boolean) {
   if (mode === 'replace') {
     route.value.rules = block.rules ?? []
     route.value.rule_set = block.rule_set ?? []
@@ -294,5 +299,21 @@ function onImportRules(block: any, mode: 'merge' | 'replace', applyFinal: boolea
     }
   }
   if (applyFinal && block.final) route.value.final = block.final
+  importRulesModal.value.visible = false
+}
+
+const importRulesetsModal = ref({ visible: false })
+
+function showImportRulesets() {
+  importRulesetsModal.value.visible = true
+}
+
+function closeImportRulesets() {
+  importRulesetsModal.value.visible = false
+}
+
+function saveImportRulesets(items: any[]) {
+  rulesets.value.push(...items)
+  importRulesetsModal.value.visible = false
 }
 </script>

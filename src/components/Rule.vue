@@ -1,4 +1,12 @@
 <template>
+  <ExpTextarea
+    v-model="expTextarea.visible"
+    :visible="expTextarea.visible"
+    :label="expTextarea.title"
+    :content="expTextarea.content"
+    @update="saveExpTextarea"
+    @close="closeExpTextarea"
+  />
   <v-card style="background-color: inherit;">
     <v-row>
       <v-col cols="12" v-if="optionInbound">
@@ -60,38 +68,59 @@
         </v-select>
       </v-col>
       <v-col cols="12" sm="6" v-if="rule.domain != undefined">
-        <div class="d-flex align-start gap-1">
-          <v-textarea :label="$t('rule.domain')" hide-details v-model="domain" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
-          <BulkEditDialog v-model="domain" :label="$t('rule.domain')" />
-        </div>
+        <v-textarea :label="$t('rule.domain')"
+          hide-details
+          v-model="domain"
+          rows="5"
+          no-resize
+          density="compact"
+          append-icon="mdi-arrow-expand"
+          @click:append="openExpTextarea($t('rule.domain'), 'domain')"
+        />
       </v-col>
-      <!-- domain_suffix -->
       <v-col cols="12" sm="6" v-if="rule.domain_suffix != undefined">
-        <div class="d-flex align-start gap-1">
-          <v-textarea :label="$t('rule.domainSufix')" hide-details v-model="domain_suffix"rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
-          <BulkEditDialog v-model="domain_suffix" :label="$t('rule.domainSufix')" />
-        </div>
+        <v-textarea :label="$t('rule.domainSufix')"
+          hide-details
+          v-model="domain_suffix"
+          rows="5"
+          no-resize
+          density="compact"
+          append-icon="mdi-arrow-expand"
+          @click:append="openExpTextarea($t('rule.domainSufix'), 'domain_suffix')"
+        />
       </v-col>
-      <!-- domain_keyword -->
       <v-col cols="12" sm="6" v-if="rule.domain_keyword != undefined">
-        <div class="d-flex align-start gap-1">
-          <v-textarea :label="$t('rule.domainKw')" hide-details v-model="domain_keyword" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
-          <BulkEditDialog v-model="domain_keyword" :label="$t('rule.domainKw')" />
-        </div>
+        <v-textarea :label="$t('rule.domainKw')"
+          hide-details
+          v-model="domain_keyword"
+          rows="5"
+          no-resize
+          density="compact"
+          append-icon="mdi-arrow-expand"
+          @click:append="openExpTextarea($t('rule.domainKw'), 'domain_keyword')"
+        />
       </v-col>
-      <!-- domain_regex -->
       <v-col cols="12" sm="6" v-if="rule.domain_regex != undefined">
-        <div class="d-flex align-start gap-1">
-          <v-textarea :label="$t('rule.domainRgx')" hide-details v-model="domain_regex" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
-          <BulkEditDialog v-model="domain_regex" :label="$t('rule.domainRgx')" />
-        </div>
+        <v-textarea :label="$t('rule.domainRgx')"
+          hide-details
+          v-model="domain_regex"
+          rows="5"
+          no-resize
+          density="compact"
+          append-icon="mdi-arrow-expand"
+          @click:append="openExpTextarea($t('rule.domainRgx'), 'domain_regex')"
+        />
       </v-col>
-      <!-- ip_cidr -->
       <v-col cols="12" sm="6" v-if="rule.ip_cidr != undefined">
-        <div class="d-flex align-start gap-1">
-          <v-textarea :label="$t('rule.ip')" hide-details v-model="ip_cidr" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
-          <BulkEditDialog v-model="ip_cidr" :label="$t('rule.ip')" />
-        </div>
+        <v-textarea :label="$t('rule.ip')"
+          hide-details
+          v-model="ip_cidr"
+          rows="5"
+          no-resize
+          density="compact"
+          append-icon="mdi-arrow-expand"
+          @click:append="openExpTextarea($t('rule.ip'), 'ip_cidr')"
+        />
       </v-col>
       <v-col cols="12" sm="6" v-if="rule.ip_is_private != undefined">
         <v-switch v-model="rule.ip_is_private" color="primary" :label="$t('rule.privateIp')" hide-details></v-switch>
@@ -106,19 +135,27 @@
           v-model="portOption">
         </v-select>
       </v-col>
-      <!-- port -->
       <v-col cols="12" sm="6" v-if="rule.port != undefined">
-        <div class="d-flex align-start gap-1">
-         <v-textarea :label="$t('rule.port')" hide-details v-model="port" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
-         <BulkEditDialog v-model="port" :label="$t('rule.port')" />
-        </div>
+        <v-textarea :label="$t('rule.port')"
+          hide-details
+          v-model="port"
+          rows="5"
+          no-resize
+          density="compact"
+          append-icon="mdi-arrow-expand"
+          @click:append="openExpTextarea($t('rule.port'), 'port')"
+        />
       </v-col>
-      <!-- port_range -->
       <v-col cols="12" sm="6" v-if="rule.port_range != undefined">
-        <div class="d-flex align-start gap-1">
-          <v-textarea :label="$t('rule.portRange')" hide-details v-model="port_range" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
-          <BulkEditDialog v-model="port_range" :label="$t('rule.portRange')" />
-        </div>
+        <v-textarea :label="$t('rule.portRange')"
+          hide-details
+          v-model="port_range"
+          rows="5"
+          no-resize
+          density="compact"
+          append-icon="mdi-arrow-expand"
+          @click:append="openExpTextarea($t('rule.portRange'), 'port_range')"
+        />
       </v-col>
     </v-row>
     <v-row v-if="optionSrcIP">
@@ -130,12 +167,16 @@
           v-model="srcIPOption">
         </v-select>
       </v-col>
-      <!-- source_ip_cidr -->
       <v-col cols="12" sm="6" v-if="rule.source_ip_cidr != undefined">
-        <div class="d-flex align-start gap-1">
-          <v-textarea :label="$t('rule.srcCidr')" hide-details v-model="source_ip_cidr" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
-          <BulkEditDialog v-model="source_ip_cidr" :label="$t('rule.srcCidr')" />
-        </div>
+        <v-textarea :label="$t('rule.srcCidr')"
+          hide-details
+          v-model="source_ip_cidr"
+          rows="5"
+          no-resize
+          density="compact"
+          append-icon="mdi-arrow-expand"
+          @click:append="openExpTextarea($t('rule.srcCidr'), 'source_ip_cidr')"
+        />
       </v-col>
       <v-col cols="12" sm="6" v-if="rule.source_ip_is_private != undefined">
         <v-switch v-model="rule.source_ip_is_private" color="primary" :label="$t('rule.srcPrivateIp')" hide-details></v-switch>
@@ -150,19 +191,27 @@
           v-model="srcPortOption">
         </v-select>
       </v-col>
-      <!-- source_port -->
       <v-col cols="12" sm="6" v-if="rule.source_port != undefined">
-        <div class="d-flex align-start gap-1">
-          <v-textarea :label="$t('rule.srcPort')" hide-details v-model="source_port" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
-          <BulkEditDialog v-model="source_port" :label="$t('rule.srcPort')" />
-        </div>
+        <v-textarea :label="$t('rule.srcPort')"
+          hide-details
+          v-model="source_port"
+          rows="5"
+          no-resize
+          density="compact"
+          append-icon="mdi-arrow-expand"
+          @click:append="openExpTextarea($t('rule.srcPort'), 'source_port')"
+        />
       </v-col>
-      <!-- source_port_range -->
       <v-col cols="12" sm="6" v-if="rule.source_port_range != undefined">
-        <div class="d-flex align-start gap-1">
-          <v-textarea :label="$t('rule.srcPortRange')" hide-details v-model="source_port_range" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
-          <BulkEditDialog v-model="source_port_range" :label="$t('rule.srcPortRange')" />
-        </div>
+        <v-textarea :label="$t('rule.srcPortRange')"
+          hide-details
+          v-model="source_port_range"
+          rows="5"
+          no-resize
+          density="compact"
+          append-icon="mdi-arrow-expand"
+          @click:append="openExpTextarea($t('rule.srcPortRange'), 'source_port_range')"
+        />
       </v-col>
     </v-row>
     <v-row v-if="optionPreferredBy">
@@ -187,10 +236,15 @@
         </v-select>
       </v-col>
       <v-col cols="12" sm="6" v-if="rule.interface_address != undefined || rule.network_interface_address != undefined || rule.default_interface_address != undefined">
-        <div class="d-flex align-start gap-1">
-          <v-textarea :label="$t('rule.interfaceAddr')" hide-details v-model="interface_addr" rows="5" no-resize density="compact" style="font-family: monospace; font-size: 13px;"></v-textarea>
-          <BulkEditDialog v-model="interface_addr" :label="$t('rule.interfaceAddr')" />
-        </div>
+        <v-textarea :label="$t('rule.interfaceAddr')"
+          hide-details
+          v-model="interface_addr"
+          rows="5"
+          no-resize
+          density="compact"
+          append-icon="mdi-arrow-expand"
+          @click:append="openExpTextarea($t('rule.interfaceAddr'), 'interface_address')"
+        />
       </v-col>
     </v-row>
     <v-row v-if="optionRuleSet">
@@ -260,9 +314,9 @@
 </template>
 
 <script lang="ts">
-import BulkEditDialog from '@/components/BulkEditDialog.vue'
+import ExpTextarea from '@/components/ExpTextarea.vue'
 export default {
-  components: { BulkEditDialog },
+  components: { ExpTextarea },
   props: ['rule', 'clients', 'inTags', 'outTags', 'rsTags', 'deleteable'],
   data() {
     return {
@@ -289,6 +343,12 @@ export default {
         { title: 'RDP', value: 'rdp' },
         { title: 'NTP', value: 'ntp' },
       ],
+      expTextarea: {
+        visible: false,
+        title: '',
+        content: '',
+        object: '',
+      }
     }
   },
   methods: {
@@ -311,6 +371,21 @@ export default {
     updateInterfaceOption(option:string) {
       this.interfaceKeys.forEach(k => delete this.$props.rule[k])
       this.$props.rule[option] = []
+    },
+    openExpTextarea(title:string, object:string) {
+      this.expTextarea.visible = !this.expTextarea.visible
+      this.expTextarea.title = title
+      this.expTextarea.content = this.$props.rule[object]?.join('\n') ?? ''
+      this.expTextarea.object = object
+    },
+    saveExpTextarea(results:string[]) {
+      this.$props.rule[this.expTextarea.object] = results
+      this.closeExpTextarea()
+    },
+    closeExpTextarea() {
+      this.expTextarea.visible = false
+      this.expTextarea.title = ''
+      this.expTextarea.object = ''
     },
   },
   computed: {
@@ -405,7 +480,6 @@ export default {
       get() { return this.$props.rule.network != undefined },
       set(v:boolean) { this.$props.rule.network = v ? [] : undefined }
     },
-    // ── String↔Array computed via \n (textarea one-per-line) ──
     domain: {
       get() { return this.$props.rule.domain?.join('\n') ?? '' },
       set(v:string) { this.$props.rule.domain = v.length > 0 ? v.split('\n').map((s:string) => s.trim()).filter((s:string) => s.length > 0) : [] }
