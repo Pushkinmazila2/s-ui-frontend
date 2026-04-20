@@ -237,7 +237,7 @@ const pushNow = async () => {
   pushing.value = false
   
   if (msg.success) {
-    gitConfig.value.lastSync = new Date().toISOString()
+    await loadData()
     push.success({
       title: i18n.global.t('success'),
       message: i18n.global.t('setting.gitSyncSuccess')
@@ -256,7 +256,7 @@ const pullNow = async () => {
   pulling.value = false
   
   if (msg.success) {
-    gitConfig.value.lastSync = new Date().toISOString()
+    await loadData()
     push.success({
       title: i18n.global.t('success'),
       message: i18n.global.t('setting.gitSyncSuccess')
