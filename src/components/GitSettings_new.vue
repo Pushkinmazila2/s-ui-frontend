@@ -173,14 +173,14 @@ const gitEnabled = computed({
 })
 
 const loadData = async () => {
-  const msg = await HttpUtils.get('apiv2/gitSyncConfig')
+  const msg = await HttpUtils.get('api/gitSyncConfig')
   if (msg.success && msg.obj) {
     gitConfig.value = msg.obj
   }
 }
 
 const saveConfig = async () => {
-  const msg = await HttpUtils.post('apiv2/gitSyncConfig', gitConfig.value)
+  const msg = await HttpUtils.post('api/gitSyncConfig', gitConfig.value)
   if (msg.success) {
     push.success({
       title: i18n.global.t('success'),
@@ -191,7 +191,7 @@ const saveConfig = async () => {
 
 const testConnection = async () => {
   testing.value = true
-  const msg = await HttpUtils.post('apiv2/gitSyncTest', null)
+  const msg = await HttpUtils.post('api/gitSyncTest', null)
   testing.value = false
   
   if (msg.success) {
@@ -204,7 +204,7 @@ const testConnection = async () => {
 
 const pushNow = async () => {
   pushing.value = true
-  const msg = await HttpUtils.post('apiv2/gitSyncPush', null)
+  const msg = await HttpUtils.post('api/gitSyncPush', null)
   pushing.value = false
   
   if (msg.success) {
@@ -218,7 +218,7 @@ const pushNow = async () => {
 
 const pullNow = async () => {
   pulling.value = true
-  const msg = await HttpUtils.post('apiv2/gitSyncPull', null)
+  const msg = await HttpUtils.post('api/gitSyncPull', null)
   pulling.value = false
   
   if (msg.success) {
