@@ -10,7 +10,8 @@
     <v-tab value="t2">{{ $t('setting.sub') }}</v-tab>
     <v-tab value="t3">{{ $t('setting.jsonSub') }}</v-tab>
     <v-tab value="t4">{{ $t('setting.clashSub') }}</v-tab>
-    <v-tab value="t5">Language</v-tab>
+    <v-tab value="t5">{{ $t('setting.git') }}</v-tab>
+    <v-tab value="t6">Language</v-tab>
   </v-tabs>
   <v-card-text>
     <v-row align="center" justify="center" style="margin-bottom: 10px;">
@@ -138,6 +139,10 @@
       </v-window-item>
 
       <v-window-item value="t5">
+        <GitSettingsVue :settings="settings" />
+      </v-window-item>
+
+      <v-window-item value="t6">
         <v-row>
           <v-col cols="12" sm="6" md="4">
             <v-select
@@ -163,6 +168,7 @@ import HttpUtils from '@/plugins/httputil'
 import { FindDiff } from '@/plugins/utils'
 import SubJsonExtVue from '@/components/SubJsonExt.vue'
 import SubClashExtVue from '@/components/SubClashExt.vue'
+import GitSettingsVue from '@/components/GitSettings.vue'
 import { push } from 'notivue'
 const locale = useLocale()
 const tab = ref("t1")
@@ -192,6 +198,7 @@ const settings = ref({
 	subURI: "",
   subJsonExt: "",
   subClashExt: "",
+  gitSync: "",
 })
 
 onMounted(async () => {
