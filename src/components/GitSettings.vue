@@ -195,7 +195,7 @@ const loadData = () => {
 
 const testConnection = async () => {
   testing.value = true
-  const msg = await HttpUtils.post('apiv2/gitSyncTest', gitConfig.value)
+  const msg = await HttpUtils.post('api/gitSyncTest', gitConfig.value)
   testing.value = false
   
   if (msg.success) {
@@ -213,7 +213,7 @@ const testConnection = async () => {
 
 const pushNow = async () => {
   pushing.value = true
-  const msg = await HttpUtils.post('apiv2/gitSyncPush', gitConfig.value)
+  const msg = await HttpUtils.post('api/gitSyncPush', gitConfig.value)
   pushing.value = false
   
   if (msg.success) {
@@ -232,7 +232,7 @@ const pushNow = async () => {
 
 const pullNow = async () => {
   pulling.value = true
-  const msg = await HttpUtils.post('apiv2/gitSyncPull', gitConfig.value)
+  const msg = await HttpUtils.post('api/gitSyncPull', gitConfig.value)
   pulling.value = false
   
   if (msg.success) {
