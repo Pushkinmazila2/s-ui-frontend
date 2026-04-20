@@ -204,6 +204,7 @@ export default {
     gitToken: "Токен доступа",
     gitAutoSync: "Автоматическая синхронизация",
     gitSyncInterval: "Интервал синхронизации",
+    gitSyncOnChange: "Синхронизация при изменении",
     gitSyncConfig: "Синхронизировать конфигурацию",
     gitSyncDb: "Синхронизировать базу данных",
     gitTestConnection: "Проверить подключение",

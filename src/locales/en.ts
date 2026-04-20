@@ -203,6 +203,7 @@ export default {
     gitToken: "Access Token",
     gitAutoSync: "Auto Sync",
     gitSyncInterval: "Sync Interval",
+    gitSyncOnChange: "Sync on Change",
     gitSyncConfig: "Sync Config",
     gitSyncDb: "Sync Database",
     gitTestConnection: "Test Connection",

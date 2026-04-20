@@ -62,7 +62,7 @@
             type="number"
             min="1"
             :label="$t('setting.gitSyncInterval')"
-            :suffix="$t('date.h')"
+            suffix="s"
             hide-details
             :disabled="!gitConfig.autoSync"
           />
@@ -70,6 +70,14 @@
       </v-row>
 
       <v-row>
+        <v-col cols="12" sm="6" md="4">
+          <v-switch
+            v-model="gitConfig.syncOnChange"
+            color="primary"
+            :label="$t('setting.gitSyncOnChange')"
+            hide-details
+          />
+        </v-col>
         <v-col cols="12" sm="6" md="4">
           <v-switch
             v-model="gitConfig.syncConfig"
@@ -97,6 +105,15 @@
       </v-row>
 
       <v-row>
+        <v-col cols="auto">
+          <v-btn
+            color="primary"
+            @click="saveConfig"
+            :loading="saving"
+          >
+            {{ $t('actions.save') }}
+          </v-btn>
+        </v-col>
         <v-col cols="auto">
           <v-btn
             color="primary"
@@ -135,7 +152,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import HttpUtils from '@/plugins/httputil'
 import { push } from 'notivue'
 import { i18n } from '@/locales'
@@ -150,45 +167,48 @@ const providers = [
   { title: 'Gitea', value: 'gitea' }
 ]
 
+const saving = ref(false)
 const testing = ref(false)
 const pushing = ref(false)
 const pulling = ref(false)
 
 const gitConfig = ref({
-  enabled: false,
+  enable: false,
   provider: 'github',
   repoUrl: '',
   branch: 'main',
   token: '',
   autoSync: false,
-  syncInterval: 24,
+  syncInterval: 3600,
+  syncOnChange: false,
   syncConfig: true,
   syncDb: false,
-  lastSync: ''
+  lastSync: 0
 })
 
 const gitEnabled = computed({
-  get: () => gitConfig.value.enabled,
-  set: (v: boolean) => { gitConfig.value.enabled = v }
+  get: () => gitConfig.value.enable,
+  set: (v: boolean) => { gitConfig.value.enable = v }
 })
 
-const loadData = () => {
-  if (props.settings?.gitSync?.length > 0) {
-    try {
-      gitConfig.value = JSON.parse(props.settings.gitSync)
-    } catch (e) {
-      gitConfig.value = {
-        enabled: false,
-        provider: 'github',
-        repoUrl: '',
-        branch: 'main',
-        token: '',
-        autoSync: false,
-        syncInterval: 24,
-        syncConfig: true,
-        syncDb: false,
-        lastSync: ''
-      }
+const loadData = async () => {
+  const msg = await HttpUtils.get('api/gitSyncConfig')
+  if (msg.success && msg.obj) {
+    gitConfig.value = msg.obj
+  }
+}
+
+const saveConfig = async () => {
+  saving.value = true
+  const msg = await HttpUtils.post('api/gitSyncConfig', gitConfig.value)
+  saving.value = false
+  if (msg.success) {
+    push.success({
+      title: i18n.global.t('success'),
+      message: i18n.global.t('actions.save')
+    })
+    if (msg.obj) {
+      gitConfig.value = msg.obj
     }
   }
 }
@@ -249,17 +269,13 @@ const pullNow = async () => {
   }
 }
 
-const formatDate = (dateStr: string) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
+const formatDate = (timestamp: number) => {
+  if (!timestamp) return ''
+  const date = new Date(timestamp * 1000)
   return date.toLocaleString()
 }
 
-watch(() => props.settings, () => {
+onMounted(() => {
   loadData()
-}, { immediate: true })
-
-watch(gitConfig, (newVal) => {
-  props.settings.gitSync = JSON.stringify(newVal, null, 2)
-}, { deep: true })
+})
 </script>
